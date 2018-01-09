@@ -14,6 +14,7 @@ Raspberryに温度センサーを取り付け、取得された温度データ�
 ### /boot/config.txtの編集
 
 /boot/config.txtに下記記述を追加する。
+
 `dtoverlay=w1-gpio,gpiopin=4,pullup=y`
 
 ### カーネルモジュールをロードする
