@@ -5,7 +5,7 @@ Raspberryに温度センサーを取り付け、取得された温度データ�
 ## Raspberryに温度センサーを取り付ける
 ### 配線
 下図のように温度センサーDA18B20をRaspberryにつなぐ。
-!DA18B20(imgs/DS18B20.jpg)
-!Raspberry(imgs/Raspberry.png)
+![DA18B20](imgs/DS18B20.jpg)
+![Raspberry](imgs/Raspberry.png)
 
 
