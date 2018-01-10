@@ -21,16 +21,16 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
 1-wire用下記モジュールをロードし、RaspberryPiを再起動する。
 
-    $ sudo modprobe w1-gpio
-    $ sudo modprobe w1-therm
-    $ sudo reboot
+    pi $ sudo modprobe w1-gpio
+    pi $ sudo modprobe w1-therm
+    pi $ sudo reboot
 
 
 ### 温度センサーが正常に動作していることを確認する
 
 モジュールが正常動作するなら、/sys/bus/w1/devicesの下に「28-」で始まるディレクトリーが作成される。その中にw1_slaveのファイルに温度が書き込まれる。
 
-    $ cat /sys/bus/w1/devices/28-0216258811ee/w1_slave
+    pi $ cat /sys/bus/w1/devices/28-0216258811ee/w1_slave
     a1 01 4b 46 7f ff 0c 10 8c : crc=8c YES
     a1 01 4b 46 7f ff 0c 10 8c t=26062
 
@@ -74,13 +74,15 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
 2.デバイスを登録
 
-  - デバイスを登録   
-        $ aws iot create-thing --thing-name raspberry01
-        {
-          "thingArn": "arn:aws:iot:ap-northeast-1:011960800664:thing/raspberry01",
-          "thingName": "raspberry01",
-          "thingId": "f3f84490-06ca-4934-bbbc-81151eecef67"
-        }
+  - デバイスを登録
+  ```
+    $ aws iot create-thing --thing-name raspberry01
+    {
+      "thingArn": "arn:aws:iot:ap-northeast-1:011960800664:thing/raspberry01",
+      "thingName": "raspberry01",
+      "thingId": "f3f84490-06ca-4934-bbbc-81151eecef67"
+    }
+  ```
   - デバイスの証明書を作成
 
   ```
@@ -100,7 +102,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     "certificateId": "d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
 }
   ```
-  AWS Iot ルート証明書を取得する
+  AWS IoT ルート証明書を取得する
   ```
   curl https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem -o root.pem
   ```
@@ -157,13 +159,13 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   - RaspberryPiにAWSIoTPythonSDKをインストールする
 
   ```
-  $ pip install AWSIoTPythonSDK
+  pi $ pip install AWSIoTPythonSDK
   ```
 
   - AWSIoTPythonSDKのサンプルを基づいた温度データ送信プログラムを起動して送信する。
 
   ```
-  $ python sendTemp.py
+  pi $ python sendTemp.py
   ```
   正常の場合、一秒ごと温度を取得し、AWS IoTへ送信する。送信する際に、下記メッセージが出力される。
 
