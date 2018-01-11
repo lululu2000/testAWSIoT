@@ -407,42 +407,42 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     ```
 
   ## Kibanaで温度データを可視化にする
-  
+
   1. RaspberryPiで温度データを送信
 
-    ```
-    pi $ python sendTemp.py
-    ```
+  ```
+  pi $ python sendTemp.py
+  ```
 
   2. index pattern作成
 
-    AWSコンソールのElasticsearchのtemperatureドメインの概要画面からKibanaのページを開いて、index pattern を作成する画面が表示される。
-    index patternに`thermometer`を設定、時間フィルターに`timestamp`属性を指定し、「create」をクリックする。
+  AWSコンソールのElasticsearchのtemperatureドメインの概要画面からKibanaのページを開いて、index pattern を作成する画面が表示される。
+  index patternに`thermometer`を設定、時間フィルターに`timestamp`属性を指定し、「create」をクリックする。
   ![index pattern作成](imgs/Shot010.png)
 
   3. Discover画面でデータを確認する
 
-    左側のメニューから`Discover`をクリックすると、Discover画面が表示される。直前受信した温度データと時間別受信件数のバーチャートが表示される。
+  左側のメニューから`Discover`をクリックすると、Discover画面が表示される。直前受信した温度データと時間別受信件数のバーチャートが表示される。
   ![Discover](imgs/Shot011.png)
 
   4. Visualize作成
 
-    左側のメニューから`Visualize`をクリックして、`Create a visualization`をクリックすると、visualizationタイプ選択画面が表示される。
+  左側のメニューから`Visualize`をクリックして、`Create a visualization`をクリックすると、visualizationタイプ選択画面が表示される。
     ![Select visualization type](imgs/Shot012.png)
 
-    いずれかのチャートを選択すると、Choose search source画面が表示される。（例はパイチャートを選択した）
+  いずれかのチャートを選択すると、Choose search source画面が表示される。（例はパイチャートを選択した）
     ![Choose search source](imgs/Shot013.png)
 
-    index `thermometer`を選択すると、visualizeの設定画面が表示される
+  index `thermometer`を選択すると、visualizeの設定画面が表示される
     ![new visualization](imgs/Shot014.png)
 
-    *Split Slices*をクリックし、*Aggregation*に*Range*を選択して、次の通り温度のRangeを設定する。
+  *Split Slices*をクリックし、*Aggregation*に*Range*を選択して、次の通り温度のRangeを設定する。
 
-    |From|To|
-    |---:|---:|
-    |0|15.0|
-    |15.0|20.0|
-    |20.0|26.0|
-    |26.0|30.0|
-    |30.0|45.0|
-    ![new visualization](imgs/Shot015.png)
+  |From|To|
+  |---:|---:|
+  |0|15.0|
+  |15.0|20.0|
+  |20.0|26.0|
+  |26.0|30.0|
+  |30.0|45.0|
+  ![new visualization](imgs/Shot015.png)
