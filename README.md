@@ -355,7 +355,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
       `temperature`をクリックすると、さらに詳細情報が確認できる。
       ![ルール詳細画面](imgs/Shot009.png)
 
-  3.ルールの動作確認
+  3. ルールの動作確認
     - RaspberryPiから温度データを送信させる。
 
       ```
@@ -364,13 +364,13 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
     - Kibanaで登録データを確認する。
 
-    ```
-    $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' -d'{"query" : {"match_all" : {}} }' -H 'Content-Type:application/json'
-    # 登録されたデータが出力される
-    {"took":4,"timed_out":false,"_shards":{"total":5,"successful":5,"skipped":0,"failed":0},"hits":{"total":24,"max_score":1.0,"hits":[{"_index":"thermometer","_type":"raspberry","_id":"770889b2-ca55-4666-84d2-d6a5e39e07b9","_score":1.0,"_source":{"temperature":26.875,"timestamp":1515636649394}},{"_index":"thermometer","_type":"raspberry","_id":"db9835c0-9eb4-4e0e-bf21-84581e29b69d","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636657719}},{"_index":"thermometer","_type":"raspberry","_id":"2571d39b-f737-4c68-9b32-8d32b6185257","_score":1.0,"_source":{"temperature":27,"timestamp":1515636663486}},{"_index":"thermometer","_type":"raspberry","_id":"9864f9d9-8577-4df8-b73f-81fae33cf5b8","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636669119}},{"_index":"thermometer","_type":"raspberry","_id":"09983bc3-21f0-4483-9cad-2592f4e56262","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636671019}},{"_index":"thermometer","_type":"raspberry","_id":"e65f5374-9f16-4f76-8470-d921a67963c4","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636676699}},{"_index":"thermometer","_type":"raspberry","_id":"b07a81c7-b17b-41ca-93fb-a8d5b390a758","_score":1.0,"_source":{"temperature":27.125,"timestamp":1515636693848}},{"_index":"thermometer","_type":"raspberry","_id":"18a07df9-a12c-4775-892b-5d20fa943647","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636651277}},{"_index":"thermometer","_type":"raspberry","_id":"9ae56c90-ee7a-46ce-ae75-bd8e229d7b26","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636653976}},{"_index":"thermometer","_type":"raspberry","_id":"fb4b36b0-b279-4fc4-907c-0018d25a0ed0","_score":1.0,"_source":{"temperature":27,"timestamp":1515636665363}}]}}
-    ```
+      ```
+      $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' -d'{"query" : {"match_all" : {}} }' -H 'Content-Type:application/json'
+      # 登録されたデータが出力される
+      {"took":4,"timed_out":false,"_shards":{"total":5,"successful":5,"skipped":0,"failed":0},"hits":{"total":24,"max_score":1.0,"hits":[{"_index":"thermometer","_type":"raspberry","_id":"770889b2-ca55-4666-84d2-d6a5e39e07b9","_score":1.0,"_source":{"temperature":26.875,"timestamp":1515636649394}},{"_index":"thermometer","_type":"raspberry","_id":"db9835c0-9eb4-4e0e-bf21-84581e29b69d","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636657719}},{"_index":"thermometer","_type":"raspberry","_id":"2571d39b-f737-4c68-9b32-8d32b6185257","_score":1.0,"_source":{"temperature":27,"timestamp":1515636663486}},{"_index":"thermometer","_type":"raspberry","_id":"9864f9d9-8577-4df8-b73f-81fae33cf5b8","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636669119}},{"_index":"thermometer","_type":"raspberry","_id":"09983bc3-21f0-4483-9cad-2592f4e56262","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636671019}},{"_index":"thermometer","_type":"raspberry","_id":"e65f5374-9f16-4f76-8470-d921a67963c4","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636676699}},{"_index":"thermometer","_type":"raspberry","_id":"b07a81c7-b17b-41ca-93fb-a8d5b390a758","_score":1.0,"_source":{"temperature":27.125,"timestamp":1515636693848}},{"_index":"thermometer","_type":"raspberry","_id":"18a07df9-a12c-4775-892b-5d20fa943647","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636651277}},{"_index":"thermometer","_type":"raspberry","_id":"9ae56c90-ee7a-46ce-ae75-bd8e229d7b26","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636653976}},{"_index":"thermometer","_type":"raspberry","_id":"fb4b36b0-b279-4fc4-907c-0018d25a0ed0","_score":1.0,"_source":{"temperature":27,"timestamp":1515636665363}}]}}
+      ```
 
-  4.問題点
+  4. 問題点
     上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
     とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
     - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
