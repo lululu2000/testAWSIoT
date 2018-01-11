@@ -274,20 +274,20 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         ```
       ポリシーを作成する。(最初作ったIAMユーザーのアクセス権限にIAM権限が付与されていないため、ポリシーやロールの作成ができない。コンソールでIAMFullAccess権限をユーザーiotTesterに追加してから続行)
         ```
-      $ aws iam create-policy --policy-name ESAccessForIoT --policy-document file://esaccess-for-iot.json
-  {
-      "Policy": {
-          "PolicyName": "ESAccessForIoT",
-          "CreateDate": "2018-01-11T00:33:34.423Z",
-          "AttachmentCount": 0,
-          "IsAttachable": true,
-          "PolicyId": "ANPAJJ5I5ZD3GIXYLWZ4O",
-          "DefaultVersionId": "v1",
-          "Path": "/",
-          "Arn": "arn:aws:iam::011960800664:policy/ESAccessForIoT",
-          "UpdateDate": "2018-01-11T00:33:34.423Z"
-      }
-  }
+        $ aws iam create-policy --policy-name ESAccessForIoT --policy-document file://esaccess-for-iot.json
+        {
+            "Policy": {
+                "PolicyName": "ESAccessForIoT",
+                "CreateDate": "2018-01-11T00:33:34.423Z",
+                "AttachmentCount": 0,
+                "IsAttachable": true,
+                "PolicyId": "ANPAJJ5I5ZD3GIXYLWZ4O",
+                "DefaultVersionId": "v1",
+                "Path": "/",
+                "Arn": "arn:aws:iam::011960800664:policy/ESAccessForIoT",
+                "UpdateDate": "2018-01-11T00:33:34.423Z"
+            }
+        }
         ```
     - ロールを作成
 
