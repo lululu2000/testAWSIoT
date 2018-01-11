@@ -249,10 +249,10 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         }
       }
       ```
-    Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
-      ```
-      $ aws es describe-elasticsearch-domain --domain-name temperature`
-      ```
+      Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
+        ```
+        $ aws es describe-elasticsearch-domain --domain-name temperature`
+        ```
   2.IoTルールの作成
     - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
 
