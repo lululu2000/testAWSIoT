@@ -445,4 +445,5 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   |20.0|26.0|
   |26.0|30.0|
   |30.0|45.0|
+  
   ![new visualization](imgs/Shot015.png)
