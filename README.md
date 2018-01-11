@@ -185,71 +185,70 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   1. Elasticsearchドメインの作成
 
     - Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
-
-    ```
-    {
-      "Version": "2012-10-17",
-      "Statement":
-        {
-          "Effect": "Allow",
-          "Principal": {
-            "AWS": "*"
-          },
-          "Action": [
-            "es:*"
-          ],
-          "Condition": {
-            "IpAddress": {
-              "aws:SourceIp": [
-                "39.110.217.71"
-              ]
-            }
-          },
-          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-        }
-      ]
-    }
-    ```
-    - Elasticsearchドメイン作成
-    ```
-    $ aws es create-elasticsearch-domain --domain-name temperature \
-    > --elasticsearch-version 6.0 \
-    > --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
-    > --ebs-options EBSEnabled=true,VolumeType=standard,VolumeSize=10 \
-    > --access-policies file://es-policy.json
-    {
-      "DomainStatus": {
-        "ElasticsearchClusterConfig": {
-            "DedicatedMasterEnabled": false,
-            "InstanceCount": 1,
-            "ZoneAwarenessEnabled": false,
-            "InstanceType": "t2.small.elasticsearch"
-        },
-        "DomainId": "011960800664/temperature",
-        "Created": true,
-        "Deleted": false,
-        "EBSOptions": {
-            "VolumeSize": 10,
-            "VolumeType": "standard",
-            "EBSEnabled": true
-        },
-        "Processing": true,
-        "DomainName": "temperature",
-        "SnapshotOptions": {
-            "AutomatedSnapshotStartHour": 0
-        },
-        "ElasticsearchVersion": "6.0",
-        "AccessPolicies": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":\"es:*\",\"Resource\":\"arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*\",\"Condition\":{\"IpAddress\":{\"aws:SourceIp\":\"39.110.217.71\"}}}]}",
-        "AdvancedOptions": {
-            "rest.action.multi.allow_explicit_index": "true"
-        },
-        "EncryptionAtRestOptions": {
-            "Enabled": false
-        },
-        "ARN": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature"
+      ```
+      {
+        "Version": "2012-10-17",
+        "Statement":
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "*"
+            },
+            "Action": [
+              "es:*"
+            ],
+            "Condition": {
+              "IpAddress": {
+                "aws:SourceIp": [
+                  "39.110.217.71"
+                ]
+              }
+            },
+            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+          }
+        ]
       }
-    }
-    ```
+      ```
+    - Elasticsearchドメイン作成
+      ```
+      $ aws es create-elasticsearch-domain --domain-name temperature \
+      > --elasticsearch-version 6.0 \
+      > --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
+      > --ebs-options EBSEnabled=true,VolumeType=standard,VolumeSize=10 \
+      > --access-policies file://es-policy.json
+      {
+        "DomainStatus": {
+          "ElasticsearchClusterConfig": {
+              "DedicatedMasterEnabled": false,
+              "InstanceCount": 1,
+              "ZoneAwarenessEnabled": false,
+              "InstanceType": "t2.small.elasticsearch"
+          },
+          "DomainId": "011960800664/temperature",
+          "Created": true,
+          "Deleted": false,
+          "EBSOptions": {
+              "VolumeSize": 10,
+              "VolumeType": "standard",
+              "EBSEnabled": true
+          },
+          "Processing": true,
+          "DomainName": "temperature",
+          "SnapshotOptions": {
+              "AutomatedSnapshotStartHour": 0
+          },
+          "ElasticsearchVersion": "6.0",
+          "AccessPolicies": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":\"es:*\",\"Resource\":\"arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*\",\"Condition\":{\"IpAddress\":{\"aws:SourceIp\":\"39.110.217.71\"}}}]}",
+          "AdvancedOptions": {
+              "rest.action.multi.allow_explicit_index": "true"
+          },
+          "EncryptionAtRestOptions": {
+              "Enabled": false
+          },
+          "ARN": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature"
+        }
+      }
+      ```
     Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
       ```
       $ aws es describe-elasticsearch-domain --domain-name temperature`
