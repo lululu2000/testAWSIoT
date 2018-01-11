@@ -374,37 +374,37 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
   上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
   とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
-  
-    - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
 
-      ```
-      $ curl -H 'Content-Type:application/json' -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
-      {"acknowledged":true}
-      ```
-    - 新規スキーマを作成
+  - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
 
-      ```
-      $ curl -H 'Content-Type:application/json' -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' -d @thermometer-mapping.json
-      {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
-      ```
-      mappingの定義：（thermometer-mapping.json）
+    ```
+    $ curl -H 'Content-Type:application/json' -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
+    {"acknowledged":true}
+    ```
+  - 新規スキーマを作成
 
-      ```
-      {
-        "template": "thermometer",
-        "mappings": {
-          "raspberry": {
-            "properties": {
-              "temperature": {"type": "float"},
-              "timestamp": {
-                "type": "date",
-                "format": "epoch_millis"
-              }
+    ```
+    $ curl -H 'Content-Type:application/json' -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' -d @thermometer-mapping.json
+    {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
+    ```
+    mappingの定義：（thermometer-mapping.json）
+
+    ```
+    {
+      "template": "thermometer",
+      "mappings": {
+        "raspberry": {
+          "properties": {
+            "temperature": {"type": "float"},
+            "timestamp": {
+              "type": "date",
+              "format": "epoch_millis"
             }
           }
         }
       }
-      ```
+    }
+    ```
 
   ## Kibanaで温度データを可視化にする
     1. RaspberryPiで温度データを送信
