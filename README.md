@@ -185,30 +185,30 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   1. Elasticsearchドメインの作成
 
     Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
-    ```
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Principal": {
-            "AWS": "*"
-          },
-          "Action": [
-            "es:*"
-          ],
-          "Condition": {
-            "IpAddress": {
-              "aws:SourceIp": [
-                "39.110.217.71"
-              ]
-            }
-          },
-          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-        }
-      ]
-    }
-    ```
+      ```
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "*"
+            },
+            "Action": [
+              "es:*"
+            ],
+            "Condition": {
+              "IpAddress": {
+                "aws:SourceIp": [
+                  "39.110.217.71"
+                ]
+              }
+            },
+            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+          }
+        ]
+      }
+      ```
 
     Elasticsearchドメイン作成
     ```
@@ -258,20 +258,20 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
 
       Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
-      ```
-      {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": [
-              "es:ESHttpPut"
-            ],
-            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-          }
-        ]
-      }
-      ```
+        ```
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "es:ESHttpPut"
+              ],
+              "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+            }
+          ]
+        }
+        ```
       ポリシーを作成する。(最初作ったIAMユーザーのアクセス権限にIAM権限が付与されていないため、ポリシーやロールの作成ができない。コンソールでIAMFullAccess権限をユーザーiotTesterに追加してから続行)
       ```
       $ aws iam create-policy --policy-name ESAccessForIoT --policy-document file://esaccess-for-iot.json
@@ -425,4 +425,13 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
       index `thermometer`を選択すると、visualizeの設定画面が表示される
       ![new visualization](imgs/Shot014.png)
 
-      
+      *Split Slices*をクリックし、*Aggregation*に*Range*を選択して、次の通り温度のRangeを設定する。
+
+      |From|To|
+      |---:|---:|
+      |0|15.0|
+      |15.0|20.0|
+      |20.0|26.0|
+      |26.0|30.0|
+      |30.0|45.0|
+      ![new visualization](imgs/Shot015.png)
