@@ -184,7 +184,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 ## Elasticsearchサービスの連携
   1. Elasticsearchドメインの作成
     Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
-    ```
+      ```
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -207,9 +207,9 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         }
       ]
     }
-    ```
+      ```
     Elasticsearchドメイン作成
-    ```
+      ```
     $ aws es create-elasticsearch-domain --domain-name temperature \
     > --elasticsearch-version 6.0 \
     > --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
@@ -247,17 +247,15 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         "ARN": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature"
       }
     }
-    ```
+      ```
     Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
-
-    ```
-    $ aws es describe-elasticsearch-domain --domain-name temperature`
-    ```
+      ```
+      $ aws es describe-elasticsearch-domain --domain-name temperature`
+      ```
   2.IoTルールの作成
     - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
 
       Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
-
         ```
         {
           "Version": "2012-10-17",
@@ -273,8 +271,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         }
         ```
       ポリシーを作成する。(最初作ったIAMユーザーのアクセス権限にIAM権限が付与されていないため、ポリシーやロールの作成ができない。コンソールでIAMFullAccess権限をユーザーiotTesterに追加してから続行)
-
-      ```
+        ```
       $ aws iam create-policy --policy-name ESAccessForIoT --policy-document file://esaccess-for-iot.json
   {
       "Policy": {
@@ -289,7 +286,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
           "UpdateDate": "2018-01-11T00:33:34.423Z"
       }
   }
-      ```
+        ```
     - ロールを作成
 
       ```
