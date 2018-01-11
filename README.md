@@ -253,7 +253,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         ```
         $ aws es describe-elasticsearch-domain --domain-name temperature`
         ```
-  2.IoTルールの作成
+  2. IoTルールの作成
 
     - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
 
