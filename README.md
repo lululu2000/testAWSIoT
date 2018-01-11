@@ -184,7 +184,6 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 ## Elasticsearchサービスの連携
   1. Elasticsearchドメインの作成
     Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
-
     ```
     {
       "Version": "2012-10-17",
@@ -209,9 +208,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
       ]
     }
     ```
-
     Elasticsearchドメイン作成
-
     ```
     $ aws es create-elasticsearch-domain --domain-name temperature \
     > --elasticsearch-version 6.0 \
