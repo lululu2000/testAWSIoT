@@ -436,7 +436,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   index `thermometer`を選択すると、visualizeの設定画面が表示される
     ![new visualization](imgs/Shot014.png)
 
-  *Split Slices*をクリックし、*Aggregation*に*Range*を選択して、次の通り温度のRangeを設定する。
+  `Split Slices`をクリックし、`Aggregation`に`Range`を選択して、次の通り温度のRangeを設定し、`Apply changes`をクリックすると、直近１５分間の寒い/やや寒い/適温/やや暑い/暑いの割合が表示される。
 
   |From|To|
   |---:|---:|
@@ -445,5 +445,9 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   |20.0|26.0|
   |26.0|30.0|
   |30.0|45.0|
-  
+
   ![new visualization](imgs/Shot015.png)
+
+  visualizationを確認できたら、`Save`をクリックして、名前を付けて保存する。
+  左側のメニューからまた`Visualize`を選んで、先ほど保存されたパイチャートが一覧に表示されていることを確認する。
+  ![Visualization list](imgs/Shot016.png)
