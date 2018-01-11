@@ -174,9 +174,255 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   ```
 
   - AWS IoTでの受信確認
-  
+
     AWSコンソールを開いて、「サービス」→「AWS IoT」→「テスト」を選択し、サブスクリプションのテスト画面を開く。
     トピックは`/thermometer/thermometer01`で送信されるため、「トピックのサブスクリプション」に`/thermometer/thermometer01`を入力して、「トピックへのサブスクライブ」をクリックする。
     ![トピックへサブスクライブする](imgs/Shot006.png)
     受信したメッセージが画面に表示される。
     ![サブスクリプション](imgs/Shot007.png)
+
+## Elasticsearchサービスの連携
+  1. Elasticsearchドメインの作成
+
+    Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "*"
+          },
+          "Action": [
+            "es:*"
+          ],
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": [
+                "39.110.217.71"
+              ]
+            }
+          },
+          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+        }
+      ]
+    }
+    ```
+
+    Elasticsearchドメイン作成
+    ```
+    $ aws es create-elasticsearch-domain --domain-name temperature \
+    > --elasticsearch-version 6.0 \
+    > --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
+    > --ebs-options EBSEnabled=true,VolumeType=standard,VolumeSize=10 \
+    > --access-policies file://es-policy.json
+    {
+      "DomainStatus": {
+        "ElasticsearchClusterConfig": {
+            "DedicatedMasterEnabled": false,
+            "InstanceCount": 1,
+            "ZoneAwarenessEnabled": false,
+            "InstanceType": "t2.small.elasticsearch"
+        },
+        "DomainId": "011960800664/temperature",
+        "Created": true,
+        "Deleted": false,
+        "EBSOptions": {
+            "VolumeSize": 10,
+            "VolumeType": "standard",
+            "EBSEnabled": true
+        },
+        "Processing": true,
+        "DomainName": "temperature",
+        "SnapshotOptions": {
+            "AutomatedSnapshotStartHour": 0
+        },
+        "ElasticsearchVersion": "6.0",
+        "AccessPolicies": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":\"es:*\",\"Resource\":\"arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*\",\"Condition\":{\"IpAddress\":{\"aws:SourceIp\":\"39.110.217.71\"}}}]}",
+        "AdvancedOptions": {
+            "rest.action.multi.allow_explicit_index": "true"
+        },
+        "EncryptionAtRestOptions": {
+            "Enabled": false
+        },
+        "ARN": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature"
+      }
+    }
+    ```
+    Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
+    ```
+    $ aws es describe-elasticsearch-domain --domain-name temperature`
+    ```
+  2.IoTルールの作成
+    - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
+
+      Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
+      ```
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "es:ESHttpPut"
+            ],
+            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+          }
+        ]
+      }
+      ```
+      ポリシーを作成する。(最初作ったIAMユーザーのアクセス権限にIAM権限が付与されていないため、ポリシーやロールの作成ができない。コンソールでIAMFullAccess権限をユーザーiotTesterに追加してから続行)
+      ```
+      $ aws iam create-policy --policy-name ESAccessForIoT --policy-document file://esaccess-for-iot.json
+  {
+      "Policy": {
+          "PolicyName": "ESAccessForIoT",
+          "CreateDate": "2018-01-11T00:33:34.423Z",
+          "AttachmentCount": 0,
+          "IsAttachable": true,
+          "PolicyId": "ANPAJJ5I5ZD3GIXYLWZ4O",
+          "DefaultVersionId": "v1",
+          "Path": "/",
+          "Arn": "arn:aws:iam::011960800664:policy/ESAccessForIoT",
+          "UpdateDate": "2018-01-11T00:33:34.423Z"
+      }
+  }
+      ```
+    - ロールを作成
+
+      ```
+      $ aws iam create-role --role-name ESAccessForIoTRole --assume-role-policy-document file://assumeRolePolicyForIoT.json
+  {
+      "Role": {
+          "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                  {
+                      "Action": "sts:AssumeRole",
+                      "Effect": "Allow",
+                      "Principal": {
+                          "Service": "iot.amazonaws.com"
+                      }
+                  }
+              ]
+          },
+          "RoleId": "AROAIXIZSM2CS3IQYI4UG",
+          "CreateDate": "2018-01-11T01:00:51.114Z",
+          "RoleName": "ESAccessForIoTRole",
+          "Path": "/",
+          "Arn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole"
+      }
+  }
+      ```
+    - ポリシーをロールにアタッチ
+
+      ```
+      $ aws iam attach-role-policy --role-name ESAccessForIoTRole --policy-arn "arn:aws:iam::011960800664:policy/ESAccessForIoT"
+      ```
+
+    - IoTルールの作成
+
+      ルールペイロードの定義：（rule-temperature.json）
+      ```
+      {
+        "sql": "select temperature, timestamp() as timestamp from '/thermometer/thermometer01'",
+        "description": "Save the temperature data from raspberryPi to elasticsearch service.",
+        "actions": [
+          {
+            "elasticsearch": {
+              "roleArn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole",
+              "endpoint": "https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com",
+              "index": "thermometer",
+              "type": "raspberry",
+              "id": "${newuuid()}"
+            }
+          }
+        ],
+        "ruleDisabled": false,
+        "awsIotSqlVersion": "2016-03-23"
+      }
+      ```
+      ルールの作成
+      ```
+      $ aws iot create-topic-rule --rule-name temperature --topic-rule-payload file://rule-temperature.json
+      ```
+    - コンソール画面でルールを確認
+      AWSコンソール画面を開いて、「サービス」→「AWS IoT」→「Act」をクリックすると、`temperautre`というルールが表示される。
+      ![ルール一覧画面](imgs/Shot008.png)
+      `temperature`をクリックすると、さらに詳細情報が確認できる。
+      ![ルール詳細画面](imgs/Shot009.png)
+
+  3.ルールの動作確認
+    - RaspberryPiから温度データを送信させる。
+      ```
+      pi $ python sendTemp.py
+      ```
+
+    - Kibanaで登録データを確認する。
+    ```
+    $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' -d'{"query" : {"match_all" : {}} }' -H 'Content-Type:application/json'
+    # 登録されたデータが出力される
+    {"took":4,"timed_out":false,"_shards":{"total":5,"successful":5,"skipped":0,"failed":0},"hits":{"total":24,"max_score":1.0,"hits":[{"_index":"thermometer","_type":"raspberry","_id":"770889b2-ca55-4666-84d2-d6a5e39e07b9","_score":1.0,"_source":{"temperature":26.875,"timestamp":1515636649394}},{"_index":"thermometer","_type":"raspberry","_id":"db9835c0-9eb4-4e0e-bf21-84581e29b69d","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636657719}},{"_index":"thermometer","_type":"raspberry","_id":"2571d39b-f737-4c68-9b32-8d32b6185257","_score":1.0,"_source":{"temperature":27,"timestamp":1515636663486}},{"_index":"thermometer","_type":"raspberry","_id":"9864f9d9-8577-4df8-b73f-81fae33cf5b8","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636669119}},{"_index":"thermometer","_type":"raspberry","_id":"09983bc3-21f0-4483-9cad-2592f4e56262","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636671019}},{"_index":"thermometer","_type":"raspberry","_id":"e65f5374-9f16-4f76-8470-d921a67963c4","_score":1.0,"_source":{"temperature":27.062,"timestamp":1515636676699}},{"_index":"thermometer","_type":"raspberry","_id":"b07a81c7-b17b-41ca-93fb-a8d5b390a758","_score":1.0,"_source":{"temperature":27.125,"timestamp":1515636693848}},{"_index":"thermometer","_type":"raspberry","_id":"18a07df9-a12c-4775-892b-5d20fa943647","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636651277}},{"_index":"thermometer","_type":"raspberry","_id":"9ae56c90-ee7a-46ce-ae75-bd8e229d7b26","_score":1.0,"_source":{"temperature":26.937,"timestamp":1515636653976}},{"_index":"thermometer","_type":"raspberry","_id":"fb4b36b0-b279-4fc4-907c-0018d25a0ed0","_score":1.0,"_source":{"temperature":27,"timestamp":1515636665363}}]}}
+    ```
+
+  4.問題点
+    上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
+    とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
+    - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
+      ```
+      $ curl -H 'Content-Type:application/json' -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
+      {"acknowledged":true}
+      ```
+    - 新規スキーマを作成
+      ```
+      $ curl -H 'Content-Type:application/json' -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' -d @thermometer-mapping.json
+      {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
+      ```
+      mappingの定義：（thermometer-mapping.json）
+      ```
+      {
+        "template": "thermometer",
+        "mappings": {
+          "raspberry": {
+            "properties": {
+              "temperature": {"type": "float"},
+              "timestamp": {
+                "type": "date",
+                "format": "epoch_millis"
+              }
+            }
+          }
+        }
+      }
+      ```
+
+  ## Kibanaで温度データを可視化にする
+    1. RaspberryPiで温度データを送信
+      ```
+      pi $ python sendTemp.py
+      ```
+
+    2. index pattern作成
+
+      AWSコンソールのElasticsearchのtemperatureドメインの概要画面からKibanaのページを開いて、index pattern を作成する画面が表示される。
+      index patternに`thermometer`を設定、時間フィルターに`timestamp`属性を指定し、「create」をクリックする。
+    ![index pattern作成](imgs/Shot010.png)
+
+    3. Discover画面でデータを確認する
+
+      左側のメニューから`Discover`をクリックすると、Discover画面が表示される。直前受信した温度データと時間別受信件数のバーチャートが表示される。
+    ![Discover](imgs/Shot011.png)
+
+    4. Visualize作成
+
+      左側のメニューから`Visualize`をクリックして、`Create a visualization`をクリックすると、visualizationタイプ選択画面が表示される。
+      ![Select visualization type](imgs/Shot012.png)
+
+      いずれかのチャートを選択すると、Choose search source画面が表示される。（例はパイチャートを選択した）
+      ![Choose search source](imgs/Shot013.png)
+
+      index `thermometer`を選択すると、visualizeの設定画面が表示される
+      ![new visualization](imgs/Shot014.png)
+
+      

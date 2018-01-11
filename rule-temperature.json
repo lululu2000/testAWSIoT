@@ -1,0 +1,17 @@
+{
+  "sql": "select temperature, timestamp() as timestamp from '/thermometer/thermometer01'",
+  "description": "Save the temperature data from raspberryPi to elasticsearch service.",
+  "actions": [
+    {
+      "elasticsearch": {
+        "roleArn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole",
+        "endpoint": "https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com",
+        "index": "thermometer",
+        "type": "raspberry",
+        "id": "${newuuid()}"
+      }
+    }
+  ],
+  "ruleDisabled": false,
+  "awsIotSqlVersion": "2016-03-23"
+}

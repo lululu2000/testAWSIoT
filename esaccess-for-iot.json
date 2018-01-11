@@ -1,0 +1,12 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "es:ESHttpPut"
+      ],
+      "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+    }
+  ]
+}
