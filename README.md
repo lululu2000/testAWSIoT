@@ -186,30 +186,30 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
     Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
 
-      ```
-      {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Principal": {
-              "AWS": "*"
-            },
-            "Action": [
-              "es:*"
-            ],
-            "Condition": {
-              "IpAddress": {
-                "aws:SourceIp": [
-                  "39.110.217.71"
-                ]
-              }
-            },
-            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-          }
-        ]
-      }
-      ```
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "*"
+          },
+          "Action": [
+            "es:*"
+          ],
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": [
+                "39.110.217.71"
+              ]
+            }
+          },
+          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+        }
+      ]
+    }
+    ```
 
     Elasticsearchドメイン作成
 
