@@ -293,27 +293,27 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
       ```
       $ aws iam create-role --role-name ESAccessForIoTRole --assume-role-policy-document file://assumeRolePolicyForIoT.json
-  {
-      "Role": {
-          "AssumeRolePolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                  {
-                      "Action": "sts:AssumeRole",
-                      "Effect": "Allow",
-                      "Principal": {
-                          "Service": "iot.amazonaws.com"
+      {
+          "Role": {
+              "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                      {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                              "Service": "iot.amazonaws.com"
+                          }
                       }
-                  }
-              ]
-          },
-          "RoleId": "AROAIXIZSM2CS3IQYI4UG",
-          "CreateDate": "2018-01-11T01:00:51.114Z",
-          "RoleName": "ESAccessForIoTRole",
-          "Path": "/",
-          "Arn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole"
+                  ]
+              },
+              "RoleId": "AROAIXIZSM2CS3IQYI4UG",
+              "CreateDate": "2018-01-11T01:00:51.114Z",
+              "RoleName": "ESAccessForIoTRole",
+              "Path": "/",
+              "Arn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole"
+          }
       }
-  }
       ```
     - ポリシーをロールにアタッチ
 
