@@ -185,6 +185,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   1. Elasticsearchドメインの作成
 
     Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
+
       ```
       {
         "Version": "2012-10-17",
@@ -211,6 +212,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
       ```
 
     Elasticsearchドメイン作成
+
     ```
     $ aws es create-elasticsearch-domain --domain-name temperature \
     > --elasticsearch-version 6.0 \
@@ -251,6 +253,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     }
     ```
     Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
+
     ```
     $ aws es describe-elasticsearch-domain --domain-name temperature`
     ```
@@ -258,6 +261,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
 
       Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
+
         ```
         {
           "Version": "2012-10-17",
@@ -273,6 +277,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
         }
         ```
       ポリシーを作成する。(最初作ったIAMユーザーのアクセス権限にIAM権限が付与されていないため、ポリシーやロールの作成ができない。コンソールでIAMFullAccess権限をユーザーiotTesterに追加してから続行)
+
       ```
       $ aws iam create-policy --policy-name ESAccessForIoT --policy-document file://esaccess-for-iot.json
   {
@@ -324,6 +329,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     - IoTルールの作成
 
       ルールペイロードの定義：（rule-temperature.json）
+
       ```
       {
         "sql": "select temperature, timestamp() as timestamp from '/thermometer/thermometer01'",
@@ -344,6 +350,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
       }
       ```
       ルールの作成
+
       ```
       $ aws iot create-topic-rule --rule-name temperature --topic-rule-payload file://rule-temperature.json
       ```
@@ -355,11 +362,13 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
   3.ルールの動作確認
     - RaspberryPiから温度データを送信させる。
+
       ```
       pi $ python sendTemp.py
       ```
 
     - Kibanaで登録データを確認する。
+
     ```
     $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' -d'{"query" : {"match_all" : {}} }' -H 'Content-Type:application/json'
     # 登録されたデータが出力される
@@ -370,16 +379,19 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
     上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
     とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
     - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
+
       ```
       $ curl -H 'Content-Type:application/json' -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
       {"acknowledged":true}
       ```
     - 新規スキーマを作成
+
       ```
       $ curl -H 'Content-Type:application/json' -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' -d @thermometer-mapping.json
       {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
       ```
       mappingの定義：（thermometer-mapping.json）
+
       ```
       {
         "template": "thermometer",
@@ -399,6 +411,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
   ## Kibanaで温度データを可視化にする
     1. RaspberryPiで温度データを送信
+
       ```
       pi $ python sendTemp.py
       ```
