@@ -448,6 +448,6 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
   ![new visualization](imgs/Shot015.png)
 
-  visualizationを確認できたら、`Save`をクリックして、名前を付けて保存する。
-  左側のメニューからまた`Visualize`を選んで、先ほど保存されたパイチャートが一覧に表示されていることを確認する。
-  ![Visualization list](imgs/Shot016.png)
+  パイチャートを確認できたら、`Save`をクリックして、名前を付けて保存する。
+  再び左側のメニューから`Visualize`を選んで、先ほど保存されたパイチャートが一覧に表示されていることを確認する。
+  ![Visualize list](imgs/Shot016.png)
