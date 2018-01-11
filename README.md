@@ -183,7 +183,6 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
 ## Elasticsearchサービスの連携
   1. Elasticsearchドメインの作成
-
     Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
 
     ```
