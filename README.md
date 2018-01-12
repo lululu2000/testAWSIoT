@@ -454,17 +454,21 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
 
   5. その他Visualizeの確認
   - 縦バーチャート
+
   1分間隔の最高気温/最低気温図
   ![V-Bar chart](imgs/Shot017.png)
 
   - データテーブル
+
   時間ごと最高気温/最低気温/平均気温表
   ![Data table](imgs/Shot018.png)
 
   - ゲージ図
+
   本日平均気温のゲージ図
   ![Guage chart](imgs/Shot019.png)
 
   - 折れ線図
+  
   3時間ごとの最高気温/最低気温/平均気温図
   ![Line chart](imgs/Shot020.png)
