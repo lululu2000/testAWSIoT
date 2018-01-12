@@ -100,6 +100,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   ![結果確認](imgs/Shot005.png)  
 
 ### IoTにデバイス(RaspberryPi)の登録、証明書等の発行
+
 1.AWSCLIのインストール
 
     $ pip install awscli --upgrade --user
