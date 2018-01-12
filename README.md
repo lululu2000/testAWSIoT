@@ -53,8 +53,47 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   ![IAMユーザ](imgs/Shot001.png)
   - 「ユーザーを追加」をクリックして、ゆーざーの追加画面にユーザーIDを入力し、アクセスの種類に「プログラムによるアクセス」をチェック。「次のステップ：アクセス権限」をクリックする。
   ![ユーザーの追加](imgs/Shot002.png)
-  - IoT及びElasticsearchサービスを使う予定なので、「既存のポリシーを直接アタッチ」を選んで、「AWSIoTFullAccess」「AmazonESFullAccess」をチェックし、「次のステップ：確認」をクリックする。
+  - IoT及びElasticsearchサービスを使う予定なので、「既存のポリシーを直接アタッチ」を選んで、事前登録されたポリシー`iotTesterPolicy`をチェックし、「次のステップ：確認」をクリックする。
   ![アクセス権限の設定](imgs/Shot003.png)
+  ※事前登録された`iotTesterPolicy`の内容は下記の通り：
+  ```
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iot:GetPolicy",
+                "iot:CreateThing",
+                "iot:AttachThingPrincipal",
+                "iot:GetTopicRule",
+                "iot:AttachPrincipalPolicy",
+                "iot:AttachPolicy",
+                "es:ESHttpGet",
+                "iot:DescribeThing",
+                "es:CreateElasticsearchDomain",
+                "iot:DescribeCertificate",
+                "iot:CreatePolicy",
+                "iam:CreateRole",
+                "iam:AttachRolePolicy",
+                "es:ListTags",
+                "es:DescribeElasticsearchDomainConfig",
+                "iot:CreateTopicRule",
+                "iot:DescribeEndpoint",
+                "iam:CreatePolicy",
+                "es:ESHttpHead",
+                "es:ListDomainNames",
+                "iam:PassRole",
+                "es:DescribeElasticsearchDomain",
+                "es:DescribeElasticsearchDomains",
+                "iot:CreateKeysAndCertificate",
+                "iot:GetPolicyVersion"
+            ],
+            "Resource": "*"
+        }
+    ]
+  }
+  ```
   - 設定内容を確認し、「ユーザーの作成」をクリックする。
   ![確認](imgs/Shot004.png)
   - ユーザ追加結果画面にアクセスキーペアが表示される。「.csvのダウンロード」をクリックしてキーペア等情報をダウンロードし、控えておく。
@@ -251,7 +290,7 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
       ```
       Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
         ```
-        $ aws es describe-elasticsearch-domain --domain-name temperature`
+        $ aws es describe-elasticsearch-domain --domain-name temperature
         ```
   2. IoTルールの作成
 
@@ -469,6 +508,6 @@ RaspberryPiに温度センサーを取り付け、取得された温度データ
   ![Guage chart](imgs/Shot019.png)
 
   - 折れ線図
-  
+
   3時間ごとの最高気温/最低気温/平均気温図
   ![Line chart](imgs/Shot020.png)
