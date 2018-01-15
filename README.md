@@ -125,7 +125,7 @@ a1 01 4b 46 7f ff 0c 10 8c t=26062
 ```
 $ pip install awscli --upgrade --user
 ```
-AWSCLIの初期設定
+  AWSCLIの初期設定
 ```
 $ aws configure
 AWS Access Key ID [None]: [先控えたiotDeveloperの秘密キー]
@@ -146,12 +146,12 @@ $ aws iot create-keys-and-certificate --set-as-active \
     --public-key-outfile public.key \
     --private-key-outfile private.key
 ```
-AWS IoT ルート証明書を取得する
+  AWS IoT ルート証明書を取得する
 ```
 curl https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem \
   -o root.pem
 ```
-作成された証明書ファイルを確認する。
+  作成された証明書ファイルを確認する。
 ```
 $ ls
 cert.pem	private.key	public.key	root.pem
@@ -186,7 +186,6 @@ $ aws iot create-policy \
 $ aws iot attach-policy \
     --policy-name RaspberryPolicy \
     --target "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
-
 # デバイスをアタッチする
 $ aws iot attach-thing-principal \
     --thing-name raspberry01 \
@@ -194,209 +193,210 @@ $ aws iot attach-thing-principal \
 ```
 
 ## RaspberryPiからの送信、及びサーバ側の受信を確認する
-  - 作成された証明書と温度送信プログラムをRaspberryPiへ転送
+1. 作成された証明書と温度送信プログラムをRaspberryPiへ転送
 
-  ```
-  $ scp certs/cert.pem \
-        certs/private.key \
-        certs/root.pem \
-        raspberryPi/sendTemp.py \
-        pi@192.168.145.193:/home/pi/iotClient/
-  ```
+```
+$ scp certs/cert.pem \
+      certs/private.key \
+      certs/root.pem \
+      raspberryPi/sendTemp.py \
+      pi@192.168.145.193:/home/pi/iotClient/
+```
 
-  - RaspberryPiにAWS IoT Device SDK for Pythonをインストールする
+2. RaspberryPiにAWS IoT Device SDK for Pythonをインストールする
 
-  ```
-  $ pip install AWSIoTPythonSDK
-  ```
+```
+$ pip install AWSIoTPythonSDK
+```
 
-  - RaspberryPiから温度データ送信プログラムを起動して送信する。
+3. RaspberryPiから温度データ送信プログラムを起動して送信する。
 
-  ```
-  $ python sendTemp.py
-  ```
-  正常の場合、一秒ごと温度を取得し、AWS IoTへ送信する。送信する際に、下記メッセージが出力される。
+```
+$ python sendTemp.py
+```
+正常の場合、一秒ごと温度を取得し、AWS IoTへ送信する。送信する際に、下記メッセージが出力される。
 
-  ```
-  Published topic /thermometer/thermometer01: {"temperature": 25.875}
-  ```
+```
+Published topic /thermometer/thermometer01: {"temperature": 25.875}
+```
 
-  - AWS IoTでの受信確認
+4. AWS IoTでの受信確認
 
-    AWSコンソールを開いて、「サービス」→「AWS IoT」→「テスト」を選択し、サブスクリプションのテスト画面を開く。
-    トピックは`/thermometer/thermometer01`で送信されるため、「トピックのサブスクリプション」に`/thermometer/thermometer01`を入力して、「トピックへのサブスクライブ」をクリックする。
-    ![トピックへサブスクライブする](img/subscribe-test.png)
-    受信したメッセージが画面に表示される。
-    ![サブスクリプション](img/subscribe-result.png)
+  AWSコンソールを開いて、「サービス」→「AWS IoT」→「テスト」を選択し、サブスクリプションのテスト画面を開く。
+  トピックは`/thermometer/thermometer01`で送信されるため、「トピックのサブスクリプション」に`/thermometer/thermometer01`を入力して、「トピックへのサブスクライブ」をクリックする。
+  ![トピックへサブスクライブする](img/subscribe-test.png)
+  受信したメッセージが画面に表示される。
+  ![サブスクリプション](img/subscribe-result.png)
 
 ## Elasticsearchサービスの連携
-  1. Elasticsearchドメインの作成
+1. Elasticsearchドメインの作成
 
-    - Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
-      ```
-      {
-        "Version": "2012-10-17",
-        "Statement":
-          {
-            "Effect": "Allow",
-            "Principal": {
-              "AWS": "*"
-            },
-            "Action": [
-              "es:*"
-            ],
-            "Condition": {
-              "IpAddress": {
-                "aws:SourceIp": [
-                  "39.110.217.71"
-                ]
-              }
-            },
-            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-          }
-        ]
-      }
-      ```
-    - Elasticsearchドメイン作成
-      ```
-      $ aws es create-elasticsearch-domain \
-          --domain-name temperature \
-          --elasticsearch-version 6.0 \
-          --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
-          --ebs-options EBSEnabled=true,VolumeType=standard,VolumeSize=10 \
-          --access-policies file://json/es-policy.json
-      ```
-      Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
-      ```
-      $ aws es describe-elasticsearch-domain --domain-name temperature
-      ```
-  2. IoTルールの作成
-
-    - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
-
-      Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
-      ```
-      {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": [
-              "es:ESHttpPut"
-            ],
-            "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-          }
-        ]
-      }
-      ```
-      ポリシーを作成する。
-        ```
-        $ aws iam create-policy \
-            --policy-name ESAccessForIoT \
-            --policy-document file://path/to/esaccess-for-iot.json
-        ```
-    - ロールを作成
-
-      ```
-      $ aws iam create-role \
-          --role-name ESAccessForIoTRole \
-          --assume-role-policy-document file://path/to/assumeRolePolicyForIoT.json
-      ```
-    - ポリシーをロールにアタッチ
-
-      ```
-      $ aws iam attach-role-policy \
-          --role-name ESAccessForIoTRole \
-          --policy-arn "arn:aws:iam::011960800664:policy/ESAccessForIoT"
-      ```
-
-    - IoTルールの作成
-
-      ルールペイロードの定義：（rule-temperature.json）
-        ```
+  - Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement":
         {
-          "sql": "select temperature, timestamp() as timestamp from '/thermometer/thermometer01'",
-          "description": "Save the temperature data from raspberryPi to elasticsearch service.",
-          "actions": [
-            {
-              "elasticsearch": {
-                "roleArn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole",
-                "endpoint": "https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com",
-                "index": "thermometer",
-                "type": "raspberry",
-                "id": "${newuuid()}"
-              }
-            }
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "*"
+          },
+          "Action": [
+            "es:*"
           ],
-          "ruleDisabled": false,
-          "awsIotSqlVersion": "2016-03-23"
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": [
+                "39.110.217.71"
+              ]
+            }
+          },
+          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
         }
-        ```
-      ルールの作成
-        ```
-        $ aws iot create-topic-rule \
-            --rule-name temperature \
-            --topic-rule-payload file://path/to/rule-temperature.json
-        ```
-    - 作成されたルールを確認
-      ```
-      $ aws iot get-topic-rule --rule-name temperature
-      ```
-  3. ルールの動作確認
-    - RaspberryPiから温度データを送信させる。
+      ]
+    }
+    ```
+  - Elasticsearchドメイン作成
+    ```
+    $ aws es create-elasticsearch-domain \
+        --domain-name temperature \
+        --elasticsearch-version 6.0 \
+        --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
+        --ebs-options EBSEnabled=true,VolumeType=standard,VolumeSize=10 \
+        --access-policies file://json/es-policy.json
+    ```
+    Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
+    ```
+    $ aws es describe-elasticsearch-domain --domain-name temperature
+    ```
+2. IoTルールの作成
 
-      ```
-      pi $ python sendTemp.py
-      ```
+  - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
 
-    - Kibanaで登録データを確認する。
+    Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
+    ```
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "es:ESHttpPut"
+          ],
+          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
+        }
+      ]
+    }
+    ```
+    ポリシーを作成する。
+    ```
+    $ aws iam create-policy \
+        --policy-name ESAccessForIoT \
+        --policy-document file://path/to/esaccess-for-iot.json
+    ```
+  - ロールを作成
 
-      ```
-      $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' -d'{"query" : {"match_all" : {}} }' -H 'Content-Type:application/json'
-      # 登録されたデータが出力される
-      ```
+    ```
+    $ aws iam create-role \
+        --role-name ESAccessForIoTRole \
+        --assume-role-policy-document file://path/to/assumeRolePolicyForIoT.json
+    ```
+  - ポリシーをロールにアタッチ
 
-  4. 問題点
+    ```
+    $ aws iam attach-role-policy \
+        --role-name ESAccessForIoTRole \
+        --policy-arn "arn:aws:iam::011960800664:policy/ESAccessForIoT"
+    ```
 
-  上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
-  とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
+  - IoTルールの作成
+
+    ルールペイロードの定義：（rule-temperature.json）
+    ```
+    {
+      "sql": "select temperature, timestamp() as timestamp from '/thermometer/thermometer01'",
+      "description": "Save the temperature data from raspberryPi to elasticsearch service.",
+      "actions": [
+        {
+          "elasticsearch": {
+            "roleArn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole",
+            "endpoint": "https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com",
+            "index": "thermometer",
+            "type": "raspberry",
+            "id": "${newuuid()}"
+          }
+        }
+      ],
+      "ruleDisabled": false,
+      "awsIotSqlVersion": "2016-03-23"
+    }
+    ```
+    ルールの作成
+    ```
+    $ aws iot create-topic-rule \
+        --rule-name temperature \
+        --topic-rule-payload file://path/to/rule-temperature.json
+    ```
+  - 作成されたルールを確認
+    ```
+    $ aws iot get-topic-rule --rule-name temperature
+    ```
+3. ルールの動作確認
+  - RaspberryPiから温度データを送信させる。
+
+    ```
+    pi $ python sendTemp.py
+    ```
+
+  - Kibanaで登録データを確認する。
+
+    ```
+    $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' \
+      -d'{"query" : {"match_all" : {}} }' \
+      -H 'Content-Type:application/json'
+    # 登録されたデータが出力される
+    ```
+
+4. 問題点
+
+上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
+とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
 
   - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
 
-    ```
-    $ curl -H 'Content-Type:application/json' \
-        -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
-    {"acknowledged":true}
-    ```
+  ```
+  $ curl -H 'Content-Type:application/json' \
+      -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
+  {"acknowledged":true}
+  ```
   - 新規スキーマを作成
 
-    ```
-    $ curl -H 'Content-Type:application/json' \
-        -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' \
-        -d @json/thermometer-mapping.json
-    {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
-    ```
-    mappingの定義：（thermometer-mapping.json）
+  ```
+  $ curl -H 'Content-Type:application/json' \
+      -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' \
+      -d @json/thermometer-mapping.json
+  {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
+  ```
+  mappingの定義：（thermometer-mapping.json）
 
-    ```
-    {
-      "template": "thermometer",
-      "mappings": {
-        "raspberry": {
-          "properties": {
-            "temperature": {"type": "float"},
-            "timestamp": {
-              "type": "date",
-              "format": "epoch_millis"
-            }
+  ```
+  {
+    "template": "thermometer",
+    "mappings": {
+      "raspberry": {
+        "properties": {
+          "temperature": {"type": "float"},
+          "timestamp": {
+            "type": "date",
+            "format": "epoch_millis"
           }
         }
       }
     }
-    ```
+  }
+  ```
 
-  ## Kibanaで温度データを可視化にする
-
+## Kibanaで温度データを可視化にする
   1. RaspberryPiで温度データを送信
 
   ```
