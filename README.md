@@ -3,7 +3,7 @@
 
 [Raspberry Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/) (以下RaspberryPiと称する)に温度センサーを取り付け、取得された温度データを[AWS IoT Device SDK for Python](https://github.com/aws/aws-iot-device-sdk-python)を利用し、AWS IoTへ送信する。送信された温度データをElasticsearchで蓄積し、Kibanaで統計結果を確認する。
 
-## Raspberryに温度センサーを取り付ける
+## RaspberryPiに温度センサーを取り付ける
 
 ### 配線
 
@@ -345,7 +345,7 @@ Published topic /thermometer/thermometer01: {"temperature": 25.875}
   - RaspberryPiから温度データを送信させる。
 
     ```
-    pi $ python sendTemp.py
+    $ python sendTemp.py
     ```
 
   - Kibanaで登録データを確認する。
