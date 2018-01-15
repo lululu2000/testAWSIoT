@@ -55,22 +55,19 @@ $ aws iam create-policy \
     --policy-document file://path/to/iam-dev-policy.json
 ```
     - 作業用ユーザーを作成する
-
-    ```
-    $ aws iam create-user --user-name iotDeveloper
-    ```
+```
+$ aws iam create-user --user-name iotDeveloper
+```
     - ユーザーにポリシーをアタッチする
-
-    ```
-    $ aws iam attach-user-policy \
-          --user-name iotDeveloper \
-          --policy-arn "arn:aws:iam::011960800664:policy/iotDevPolicy"
-    ```
+```
+$ aws iam attach-user-policy \
+      --user-name iotDeveloper \
+      --policy-arn "arn:aws:iam::011960800664:policy/iotDevPolicy"
+```
     - AWSCLI用アクセスキーを生成する。出力されたアクセスキーと秘密キーを控えておく。
-
-    ```
-    aws iam create-access-key --user-name iotDeveloper
-    ```
+```
+aws iam create-access-key --user-name iotDeveloper
+```
 
 ### IoTにデバイス(RaspberryPi)の登録、証明書等の発行
 
@@ -89,82 +86,82 @@ Default output format [None]: json
 2. デバイスを登録
 
   - デバイスを登録
-  ```
-    $ aws iot create-thing --thing-name raspberry01
-  ```
+```
+  $ aws iot create-thing --thing-name raspberry01
+```
   - デバイスの証明書を作成
-  ```
-  $ mkdir certs
-  $ cd certs
-  $ aws iot create-keys-and-certificate --set-as-active \
-        --certificate-pem-outfile cert.pem \
-        --public-key-outfile public.key \
-        --private-key-outfile private.key
-  {
-      "certificateArn": "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d",
-      "certificatePem": [デバイス証明書],
-      "keyPair": {
-          "PublicKey": [公開キー],
-          "PrivateKey": [プライベートキー]
-      },
-      "certificateId": "d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
-  }
-  ```
+```
+$ mkdir certs
+$ cd certs
+$ aws iot create-keys-and-certificate --set-as-active \
+      --certificate-pem-outfile cert.pem \
+      --public-key-outfile public.key \
+      --private-key-outfile private.key
+{
+    "certificateArn": "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d",
+    "certificatePem": [デバイス証明書],
+    "keyPair": {
+        "PublicKey": [公開キー],
+        "PrivateKey": [プライベートキー]
+    },
+    "certificateId": "d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
+}
+```
   AWS IoT ルート証明書を取得する
-  ```
-  curl https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem \
-      -o root.pem
-  ```
+```
+curl https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem \
+    -o root.pem
+```
   作成された証明書ファイルを確認する。
-  ```
-  $ ls
-  cert.pem	private.key	public.key	root.pem
-  ```
+```
+$ ls
+cert.pem	private.key	public.key	root.pem
+```
   - デバイスポリシーを作成
-  ```
-  $ aws iot create-policy \
-      --policy-name RaspberryPolicy \
-      --policy-document file://path/to/policy.json
-  ```
+```
+$ aws iot create-policy \
+    --policy-name RaspberryPolicy \
+    --policy-document file://path/to/policy.json
+```
   - デバイスとポリシーを証明書へアタッチする
-  ```
-  # ポリシーをアタッチする
-  $ aws iot attach-policy \
-      --policy-name RaspberryPolicy \
-      --target "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
-  # デバイスをアタッチする
-  $ aws iot attach-thing-principal \
-      --thing-name raspberry01 \
-      --principal "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
-  ```
+```
+# ポリシーをアタッチする
+$ aws iot attach-policy \
+    --policy-name RaspberryPolicy \
+    --target "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
+# デバイスをアタッチする
+$ aws iot attach-thing-principal \
+    --thing-name raspberry01 \
+    --principal "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
+```
 
 ## RaspberryPiからの送信、及びサーバ側の受信を確認する
   - 作成された証明書と温度送信プログラムをRaspberryPiへ転送
 
-  ```
-  $ scp certs/cert.pem \
-        certs/private.key \
-        certs/root.pem \
-        raspberryPi/sendTemp.py \
-        pi@192.168.145.193:/home/pi/iotClient/
-  ```
+```
+$ scp certs/cert.pem \
+      certs/private.key \
+      certs/root.pem \
+      raspberryPi/sendTemp.py \
+      pi@192.168.145.193:/home/pi/iotClient/
+```
 
   - RaspberryPiにAWS IoT Device SDK for Pythonをインストールする
 
-  ```
-  $ pip install AWSIoTPythonSDK
-  ```
+```
+$ pip install AWSIoTPythonSDK
+```
 
   - AWS IoT Device SDK for Pythonのサンプルを基づいた温度データ送信プログラムを起動して送信する。
 
-  ```
-  $ python sendTemp.py
-  ```
+```
+$ python sendTemp.py
+```
   正常の場合、一秒ごと温度を取得し、AWS IoTへ送信する。送信する際に、下記メッセージが出力される。
 
-  ```
-  Published topic /thermometer/thermometer01: {"temperature": 25.875}
-  ```
+```
+Published topic /thermometer/thermometer01: {"temperature": 25.875}
+```
 
   - AWS IoTでの受信確認
 
