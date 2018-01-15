@@ -49,7 +49,7 @@ a1 01 4b 46 7f ff 0c 10 8c t=26062
   2. AWS管理者からIAMユーザとアクセスキーペアを作成する。
     AWS管理者で下記処理を実施する。
     - アクセスポリシーを作成する
-    ```
+      ```
     $ aws iam create-policy \
         --policy-name iotDevPolicy \
         --policy-document file://path/to/iam-dev-policy.json
