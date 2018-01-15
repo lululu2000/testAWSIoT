@@ -43,7 +43,6 @@ a1 01 4b 46 7f ff 0c 10 8c t=26062
 - RaspberryPiからの送信、及びサーバ側の受信を確認する
 ### AWSアカウントの作成
   1. [AWS](https://aws.amazon.co.jp)からアカウントを作成する。
-
     詳細手順は省略
 
   2. AWS管理者からIAMユーザとアクセスキーペアを作成する。
@@ -54,17 +53,17 @@ $ aws iam create-policy \
     --policy-name iotDevPolicy \
     --policy-document file://path/to/iam-dev-policy.json
 ```
-    - 作業用ユーザーを作成する
+  - 作業用ユーザーを作成する
 ```
 $ aws iam create-user --user-name iotDeveloper
 ```
-    - ユーザーにポリシーをアタッチする
+  - ユーザーにポリシーをアタッチする
 ```
 $ aws iam attach-user-policy \
       --user-name iotDeveloper \
       --policy-arn "arn:aws:iam::011960800664:policy/iotDevPolicy"
 ```
-    - AWSCLI用アクセスキーを生成する。出力されたアクセスキーと秘密キーを控えておく。
+  - AWSCLI用アクセスキーを生成する。出力されたアクセスキーと秘密キーを控えておく。
 ```
 aws iam create-access-key --user-name iotDeveloper
 ```
