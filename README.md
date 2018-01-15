@@ -8,26 +8,15 @@
 ### 配線
 
 下図に示すように温度センサー[DA18B20](https://www.maximintegrated.com/jp/products/analog/sensors-and-sensor-interface/DS18B20.html)の３本の足をRaspberryPiにつなぐ。
-<<<<<<< HEAD
 ![DA18B20](images/DS18B20.jpg)
 ![Raspberry](images/Raspberry.png)
-=======
-![DA18B20](img/DS18B20.jpg)
-![Raspberry](img/Raspberry.png)
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 
 ### /boot/config.txtの編集
 
 /boot/config.txtの最後`dtoverlay=w1-gpio,gpiopin=4,pullup=y`を追加する。
-<<<<<<< HEAD
 ```
 sudo sh -c 'echo "dtoverlay=w1-gpio,gpiopin=4,pullup=y" >> /boot/config.txt'
 ```
-=======
-
-    sudo sh -c 'echo "dtoverlay=w1-gpio,gpiopin=4,pullup=y" >> /boot/config.txt'
-
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 ### カーネルモジュールをロードする
 
 1-wire用下記モジュールをロードし、RaspberryPiを再起動する。
@@ -53,7 +42,6 @@ a1 01 4b 46 7f ff 0c 10 8c t=26062
 - IoTにデバイス(RaspberryPi)の登録、証明書等の発行
 - RaspberryPiからの送信、及びサーバ側の受信を確認する
 ### AWSアカウントの作成
-<<<<<<< HEAD
   1. [AWS](https://aws.amazon.co.jp)からアカウントを作成する。
 
     詳細手順は省略
@@ -80,84 +68,6 @@ a1 01 4b 46 7f ff 0c 10 8c t=26062
     ```
     aws iam create-access-key --user-name iotDeveloper
     ```
-=======
-
-1. [AWS](https://aws.amazon.co.jp)からアカウントを作成する。
-
-  詳細手順は省略
-
-2. AWS管理者からIAMユーザとアクセスキーペアを作成する。
-  AWS管理者で下記処理を実施する。
-  - アクセスポリシーを作成する
-  iotDevPolicy.json：
-  ```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-      {
-          "Effect": "Allow",
-          "Action": [
-              "iot:GetPolicy",
-              "iot:CreateThing",
-              "iot:AttachThingPrincipal",
-              "iot:GetTopicRule",
-              "iot:AttachPrincipalPolicy",
-              "iot:AttachPolicy",
-              "es:ESHttpGet",
-              "iot:DescribeThing",
-              "es:CreateElasticsearchDomain",
-              "iot:DescribeCertificate",
-              "iot:CreatePolicy",
-              "iam:CreateRole",
-              "iam:AttachRolePolicy",
-              "es:ListTags",
-              "es:DescribeElasticsearchDomainConfig",
-              "iot:CreateTopicRule",
-              "iot:DescribeEndpoint",
-              "iam:CreatePolicy",
-              "es:ESHttpHead",
-              "es:ListDomainNames",
-              "iam:PassRole",
-              "es:DescribeElasticsearchDomain",
-              "es:DescribeElasticsearchDomains",
-              "iot:CreateKeysAndCertificate",
-              "iot:GetPolicyVersion"
-          ],
-          "Resource": "*"
-      }
-  ]
-}
-  ```
-  上記ポリシーを作成する。
-  ```
-  $ aws iam create-policy \
-      --policy-name iotDevPolicy \
-      --policy-document file://path/to/iam-dev-policy.json
-  ```
-  - 作業用ユーザーを作成する
-  ```
-  $ aws iam create-user --user-name iotDeveloper
-  ```
-  - ユーザーにポリシーをアタッチする
-  ```
-  $ aws iam attach-user-policy \
-      --user-name iotDeveloper \
-      --policy-arn "arn:aws:iam::011960800664:policy/iotDevPolicy"
-  ```
-  - AWSCLI用アクセスキーを生成する。出力されたアクセスキーと秘密キーを控えておく。
-  ```
-  aws iam create-access-key --user-name iotDeveloper
-{
-    "AccessKey": {
-        "UserName": "iotDeveloper",
-        "Status": "Active",
-        "CreateDate": "2018-01-15T01:32:16.039Z",
-        "SecretAccessKey": [iotDeveloperの秘密キー],
-        "AccessKeyId": [iotDeveloperのアクセスキー]
-    }
-}
-  ```
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 
 ### IoTにデバイス(RaspberryPi)の登録、証明書等の発行
 
@@ -165,11 +75,7 @@ a1 01 4b 46 7f ff 0c 10 8c t=26062
 ```
 $ pip install awscli --upgrade --user
 ```
-<<<<<<< HEAD
 AWSCLIの初期設定
-=======
-  AWSCLIの初期設定
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 ```
 $ aws configure
 AWS Access Key ID [None]: [先控えたiotDeveloperの秘密キー]
@@ -178,7 +84,6 @@ Default region name [None]: ap-northeast-1
 Default output format [None]: json
 ```
 2. デバイスを登録
-<<<<<<< HEAD
 
   - デバイスを登録
   ```
@@ -349,300 +254,20 @@ Default output format [None]: json
   ```
   $ python sendTemp.py
   ```
-=======
-```
-$ aws iot create-thing --thing-name raspberry01
-```
-3. デバイスの証明書を作成
-```
-$ mkdir certs
-$ cd certs
-$ aws iot create-keys-and-certificate --set-as-active \
-    --certificate-pem-outfile cert.pem \
-    --public-key-outfile public.key \
-    --private-key-outfile private.key
-```
-  AWS IoT ルート証明書を取得する
-```
-curl https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem \
-  -o root.pem
-```
-  作成された証明書ファイルを確認する。
-```
-$ ls
-cert.pem	private.key	public.key	root.pem
-```
-4. デバイスポリシーを作成
-  ポリシーファイルを用意する。(policy.json)
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "iot:Connect",
-        "iot:Publish",
-        "iot:Subscribe"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-ポリシーを作成する
-```
-$ aws iot create-policy \
-    --policy-name RaspberryPolicy \
-    --policy-document file://path/to/policy.json
-```
-5. デバイスとポリシーを証明書へアタッチする
-```
-# ポリシーをアタッチする
-$ aws iot attach-policy \
-    --policy-name RaspberryPolicy \
-    --target "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
-# デバイスをアタッチする
-$ aws iot attach-thing-principal \
-    --thing-name raspberry01 \
-    --principal "arn:aws:iot:ap-northeast-1:011960800664:cert/d03e8b1c52bdf612a2d6bf4b1c33e3cec6dde2aec591af1135167adb4ffe6c7d"
-```
-
-## RaspberryPiからの送信、及びサーバ側の受信を確認する
-1. 作成された証明書と温度送信プログラムをRaspberryPiへ転送
-
-```
-$ scp certs/cert.pem \
-      certs/private.key \
-      certs/root.pem \
-      raspberryPi/sendTemp.py \
-      pi@192.168.145.193:/home/pi/iotClient/
-```
-
-2. RaspberryPiにAWS IoT Device SDK for Pythonをインストールする
-
-```
-$ pip install AWSIoTPythonSDK
-```
-
-3. RaspberryPiから温度データ送信プログラムを起動して送信する。
-
-```
-$ python sendTemp.py
-```
-正常の場合、一秒ごと温度を取得し、AWS IoTへ送信する。送信する際に、下記メッセージが出力される。
-
-```
-Published topic /thermometer/thermometer01: {"temperature": 25.875}
-```
-
-4. AWS IoTでの受信確認
-
-  AWSコンソールを開いて、「サービス」→「AWS IoT」→「テスト」を選択し、サブスクリプションのテスト画面を開く。
-  トピックは`/thermometer/thermometer01`で送信されるため、「トピックのサブスクリプション」に`/thermometer/thermometer01`を入力して、「トピックへのサブスクライブ」をクリックする。
-  ![トピックへサブスクライブする](img/subscribe-test.png)
-  受信したメッセージが画面に表示される。
-  ![サブスクリプション](img/subscribe-result.png)
-
-## Elasticsearchサービスの連携
-1. Elasticsearchドメインの作成
-
-  - Elasticsearchサービス用ポリシーファイルを用意する（es-policy.json）
-    ```
-    {
-      "Version": "2012-10-17",
-      "Statement":
-        {
-          "Effect": "Allow",
-          "Principal": {
-            "AWS": "*"
-          },
-          "Action": [
-            "es:*"
-          ],
-          "Condition": {
-            "IpAddress": {
-              "aws:SourceIp": [
-                "39.110.217.71"
-              ]
-            }
-          },
-          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-        }
-      ]
-    }
-    ```
-  - Elasticsearchドメイン作成
-    ```
-    $ aws es create-elasticsearch-domain \
-        --domain-name temperature \
-        --elasticsearch-version 6.0 \
-        --elasticsearch-cluster-config InstanceType=t2.small.elasticsearch,InstanceCount=1 \
-        --ebs-options EBSEnabled=true,VolumeType=standard,VolumeSize=10 \
-        --access-policies file://json/es-policy.json
-    ```
-    Elasticsearchドメインの作成は約１０分間かかる。作成されたドメインの状態を確認する：
-    ```
-    $ aws es describe-elasticsearch-domain --domain-name temperature
-    ```
-2. IoTルールの作成
-
-  - IoTサービスにElasticsearchサービスへのアクセスポリシーを作成する。
-
-    Elasticsearchサービスへ登録権限のポリシーファイル（esaccess-for-iot.json）
-    ```
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": [
-            "es:ESHttpPut"
-          ],
-          "Resource": "arn:aws:es:ap-northeast-1:011960800664:domain/temperature/*"
-        }
-      ]
-    }
-    ```
-    ポリシーを作成する。
-    ```
-    $ aws iam create-policy \
-        --policy-name ESAccessForIoT \
-        --policy-document file://path/to/esaccess-for-iot.json
-    ```
-  - ロールを作成
-
-    ```
-    $ aws iam create-role \
-        --role-name ESAccessForIoTRole \
-        --assume-role-policy-document file://path/to/assumeRolePolicyForIoT.json
-    ```
-  - ポリシーをロールにアタッチ
-
-    ```
-    $ aws iam attach-role-policy \
-        --role-name ESAccessForIoTRole \
-        --policy-arn "arn:aws:iam::011960800664:policy/ESAccessForIoT"
-    ```
-
-  - IoTルールの作成
-
-    ルールペイロードの定義：（rule-temperature.json）
-    ```
-    {
-      "sql": "select temperature, timestamp() as timestamp from '/thermometer/thermometer01'",
-      "description": "Save the temperature data from raspberryPi to elasticsearch service.",
-      "actions": [
-        {
-          "elasticsearch": {
-            "roleArn": "arn:aws:iam::011960800664:role/ESAccessForIoTRole",
-            "endpoint": "https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com",
-            "index": "thermometer",
-            "type": "raspberry",
-            "id": "${newuuid()}"
-          }
-        }
-      ],
-      "ruleDisabled": false,
-      "awsIotSqlVersion": "2016-03-23"
-    }
-    ```
-    ルールの作成
-    ```
-    $ aws iot create-topic-rule \
-        --rule-name temperature \
-        --topic-rule-payload file://path/to/rule-temperature.json
-    ```
-  - 作成されたルールを確認
-    ```
-    $ aws iot get-topic-rule --rule-name temperature
-    ```
-3. ルールの動作確認
-  - RaspberryPiから温度データを送信させる。
-
-    ```
-    $ python sendTemp.py
-    ```
-
-  - Kibanaで登録データを確認する。
-
-    ```
-    $ curl -XGET 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer/_search' \
-      -d'{"query" : {"match_all" : {}} }' \
-      -H 'Content-Type:application/json'
-    # 登録されたデータが出力される
-    ```
-
-4. 問題点
-
-上記登録されたデータの`timestamp`属性はミリ秒のlong型になります。IoTからの登録はdate型に自動変換されなかったようだ。
-とりあえず、下記の手順でIoTからの受信前に、手動でmappingを設定する。
-
-  - 既存のスキーマを削除(まだ受信されていない場合、スキップ)
-
-  ```
-  $ curl -H 'Content-Type:application/json' \
-      -XDELETE 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer'
-  {"acknowledged":true}
-  ```
-  - 新規スキーマを作成
-
-  ```
-  $ curl -H 'Content-Type:application/json' \
-      -XPUT 'https://search-temperature-hypugqxmdo3cidfgg6iuinygjm.ap-northeast-1.es.amazonaws.com/thermometer' \
-      -d @json/thermometer-mapping.json
-  {"acknowledged":true,"shards_acknowledged":true,"index":"thermometer"}
-  ```
-  mappingの定義：（thermometer-mapping.json）
-
-  ```
-  {
-    "template": "thermometer",
-    "mappings": {
-      "raspberry": {
-        "properties": {
-          "temperature": {"type": "float"},
-          "timestamp": {
-            "type": "date",
-            "format": "epoch_millis"
-          }
-        }
-      }
-    }
-  }
-  ```
-
-## Kibanaで温度データを可視化にする
-  1. RaspberryPiで温度データを送信
-
-  ```
-  $ python sendTemp.py
-  ```
-
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
   2. index pattern作成
 
   AWSコンソールのElasticsearchのtemperatureドメインの概要画面からKibanaのページを開いて、index pattern を作成する画面が表示される。
   index patternに`thermometer`を設定、時間フィルターに`timestamp`属性を指定し、「create」をクリックする。
-<<<<<<< HEAD
   ![index pattern作成](images/kibana-create-idx-ptn.png)
-=======
-  ![index pattern作成](img/kibana-create-idx-ptn.png)
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 
   3. Discover画面でデータを確認する
 
   左側のメニューから`Discover`をクリックすると、Discover画面が表示される。直前受信した温度データと時間別受信件数のバーチャートが表示される。
-<<<<<<< HEAD
   ![Discover](images/kibana-discover.png)
-=======
-  ![Discover](img/kibana-discover.png)
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 
   4. Visualize作成
 
   左側のメニューから`Visualize`をクリックして、`Create a visualization`をクリックすると、visualizationタイプ選択画面が表示される。
-<<<<<<< HEAD
     ![Select visualization type](images/kibana-select-visualize-type.png)
 
   いずれかのチャートを選択すると、Choose search source画面が表示される。（例はパイチャートを選択した）
@@ -650,15 +275,6 @@ Published topic /thermometer/thermometer01: {"temperature": 25.875}
 
   index `thermometer`を選択すると、visualizeの設定画面が表示される
     ![new visualization](images/kibana-new-visualize.png)
-=======
-    ![Select visualization type](img/kibana-select-visualize-type.png)
-
-  いずれかのチャートを選択すると、Choose search source画面が表示される。（例はパイチャートを選択した）
-    ![Choose search source](img/kibana-choose-source.png)
-
-  index `thermometer`を選択すると、visualizeの設定画面が表示される
-    ![new visualization](img/kibana-new-visualize.png)
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
 
   `Split Slices`をクリックし、`Aggregation`に`Range`を選択して、次の通り温度のRangeを設定し、`Apply changes`をクリックすると、直近１５分間の寒い/やや寒い/適温/やや暑い/暑いの割合が表示される。
 
@@ -670,7 +286,6 @@ Published topic /thermometer/thermometer01: {"temperature": 25.875}
   |26.0|30.0|
   |30.0|45.0|
 
-<<<<<<< HEAD
   ![new visualization](images/kibana-pie-chart.png)
 
   パイチャートを確認できたら、`Save`をクリックして、名前を付けて保存する。
@@ -697,31 +312,3 @@ Published topic /thermometer/thermometer01: {"temperature": 25.875}
 
     3時間ごとの最高気温/最低気温/平均気温図
     ![Line chart](images/kibana-line-chart.png)
-=======
-  ![new visualization](img/kibana-pie-chart.png)
-
-  パイチャートを確認できたら、`Save`をクリックして、名前を付けて保存する。
-  再び左側のメニューから`Visualize`を選んで、先ほど保存されたパイチャートが一覧に表示されていることを確認する。
-  ![Visualize list](img/kibana-visualize-list.png)
-
-  5. その他Visualizeの確認
-  - 縦バーチャート
-
-  1分間隔の最高気温/最低気温図
-  ![V-Bar chart](img/kibana-vbar-chart.png)
-
-  - データテーブル
-
-  時間ごと最高気温/最低気温/平均気温表
-  ![Data table](img/kibana-datatable.png)
-
-  - ゲージ図
-
-  本日平均気温のゲージ図
-  ![Guage chart](img/kibana-guage.png)
-
-  - 折れ線図
-
-  3時間ごとの最高気温/最低気温/平均気温図
-  ![Line chart](img/kibana-line-chart.png)
->>>>>>> a285690c1e73fc06ee961c45bdc31745b9757076
