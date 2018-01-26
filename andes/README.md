@@ -10,20 +10,24 @@ Kibanaで統計図等を含むダッシュボードを作成までの手順を�
 ### デバイスの登録及び証明書の取得
 
 1. [Andes管理画面]に管理者アカウントでログインする
+
 ![ログイン画面](images/login.png)
 
 2. 左側のパネルの **デバイス管理** | **デバイス登録** をクリックして、
 　デバイス登録画面を開き、デバイス名と種別等情報を入力する。
+
 ![デバイス登録](images/register-device.png)
 
 3. **登録** をクリックすると、デバイスが登録される
 　画面下方表示される証明書一式をダウンロードし、ローカルに保存する。
 また、画面に表示されているエンドポイントも控えておく。
+
 ![デバイス登録完了](images/device-registed.png)
 
 4. 登録されたデバイスを確認する
 　画面左側のパネルの **デバイス管理** | **デバイス一覧/削除/変更** をクリックして、
 登録されたデバイスを確認し、表示されたトピックを控えておく
+
 ![デバイス一覧](images/device-list.png)
 
 ### デバイスかいはつSDKの取得及びインストール
@@ -31,6 +35,7 @@ Kibanaで統計図等を含むダッシュボードを作成までの手順を�
 　画面左側のパネルの **SDKダウンロード** | **SDKダウンロード** をクリックして、
 SDKダウンロード画面を開く。開発言語を選択し、**GitHubでソースを取得** をクリックして、
 開発SDKのページが開かれる。説明を従い、SDKのインストールを行う。
+
 ![SDKダウンロード](images/download-sdk.png)
 
 ## デバイス側のメッセージ送信準備
@@ -109,11 +114,13 @@ Index patternは下記の規則で命名される
     <デバイスの種類>-<ユーザーアカウント>-<ユーザーグループ>
 ```
 今回の例の場合、温度デバイスで登録したため、``temperature-develop-developtemp``となる。
+
 ![Discover画面](images/kibana-discover.png)
 
 ### Visualizeを作成
 
 1. **Visualize** 画面を開いて、作りたいVisualizationの種類を選択する。
+
 ![Visualize作成](images/kibana-new-visualize.png)
 
 2. 例として**Line chart**を選択し、Line chartのY軸に温度と湿度の平均値を設定する。
@@ -126,6 +133,7 @@ Index patternは下記の規則で命名される
 
 4. **Apply change** ![Apply change](images/kibana-apply-change-btn.png)ボタンをクリックすると、
 時間単位の温湿度Line chartが作成される。
+
 ![Line chart](images/kibana-line-chart.png)
 
 5. Visualizeの保存
@@ -138,16 +146,20 @@ Visualize名を入力して**Save**ボタンを押せば、作成されたLine c
 
 1. **Dashboard** 画面を開いて、![Add Visualization](images/kibana-add-visualize.png)をクリックすると、
 Visualizationを選択する画面が表示される。
+
 ![Select visulization](images/kibana-select-visualize.png)
 
 2. 先ほど作られたVisualizeを選択すると、DashboardにVisualizeが追加される。サイズや位置も調整し、Dashboardを完成させる。
+
 ![Edit Dashboard](images/kibana-edit-dashboard.png)
 
 3. 編集が終わったら、**Save Dashboard**![Save Dashboard](images/kibana-save-dashboard-btn.png)をクリックして、
 保存名称を入力し、**Save** ボタンをクリックする。
+
 ![Save Dashboard](images/kibana-save-dashboard.png)
 
 4. **Share**![Share](images/kibana-share-btn.png)ボタンをクリックすると、ダッシュボードを共有するためのURLが作成される。
+
 ![Share](images/kibana-share.png)
 上段のスクリプトはHTMLに嵌め込む用iframeのスクリプト、
 下段はダッシュボード全体を表示するURLとなる
