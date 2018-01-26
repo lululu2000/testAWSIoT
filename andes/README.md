@@ -66,14 +66,14 @@ SDKダウンロード画面を開く。開発言語を選択し、**GitHubでソ
         $ cd path/of/this/project/raspberry-pi \
         && vi send_temp.py
 
-|パラメータ名      |設定値                          |
-|:---------------|:------------------------------|
-|END_POINT       |デバイス登録時控えたエンドポイント   |
-|ROOT_CA_PATH    |root.pemのパス                  |
-|CERT_PATH       |certificate.pem.crtのパス       |
-|PRIVATE_KEY     |private.pem.keyのパス           |
-|CLIENT_ID       |任意の値                        |
-|TOPIC           |デバイス登録時控えたトピック        |
+    |パラメータ名      |設定値                          |
+    |:---------------|:------------------------------|
+    |END_POINT       |デバイス登録時控えたエンドポイント   |
+    |ROOT_CA_PATH    |root.pemのパス                  |
+    |CERT_PATH       |certificate.pem.crtのパス       |
+    |PRIVATE_KEY     |private.pem.keyのパス           |
+    |CLIENT_ID       |任意の値                        |
+    |TOPIC           |デバイス登録時控えたトピック        |
 
     修正された送信プログラムをデバイスへ転送
 
