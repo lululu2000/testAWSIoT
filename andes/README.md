@@ -102,8 +102,9 @@ SDKダウンロード画面を開く。開発言語を選択し、**GitHubでソ
 ## デバイスから送信
 
 　デバイスから送信プログラムを実行し、メッセージを送信する。
-        $ cd ~/path/to/copy \
-            && python send_temp.py
+
+    $ cd ~/path/to/copy \
+        && python send_temp.py
 
 ## Kibanaでデータを可視化する
 
