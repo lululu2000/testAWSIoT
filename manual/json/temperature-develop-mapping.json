@@ -1,0 +1,26 @@
+{
+  "aliases" : { },
+  "mappings" : {
+    "n119w82wgdh1" : {
+      "properties" : {
+        "@timestamp" : {
+          "type" : "date",
+          "format" : "strict_date_optional_time||epoch_millis"
+        },
+        "data" : {
+          "properties" : {
+            "humidity" : {
+              "type" : "double"
+            },
+            "location" : {
+              "type" : "geo_point"
+            },
+            "temperature" : {
+              "type" : "double"
+            }
+          }
+        }
+      }
+    }
+  }
+}
